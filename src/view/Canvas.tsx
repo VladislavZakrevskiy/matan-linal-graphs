@@ -49,6 +49,9 @@ export const Canvas = () => {
           let lastPoint;
           switch (funcItem.type) {
             case "derevative":
+              if (funcItem.value === "") {
+                break;
+              }
               try {
                 const compliled = mathjs.derivative(funcItem.value as string, "x").compile();
                 for (let i = -Math.round(width); i < Math.round(width); i = i + 5 / (2 * lastScale)) {
@@ -69,6 +72,9 @@ export const Canvas = () => {
               }
               break;
             case "parametre_function":
+              if ((funcItem.value as string[])[0] === "" || (funcItem.value as string[])[1] === "") {
+                break;
+              }
               try {
                 const compliledX = mathjs.compile((funcItem.value as string[])[0]);
                 const compliledY = mathjs.compile((funcItem.value as string[])[1]);
@@ -91,6 +97,9 @@ export const Canvas = () => {
               }
               break;
             case "function":
+              if (funcItem.value === "") {
+                break;
+              }
               try {
                 const compliled = mathjs.compile(funcItem.value as string);
                 for (let i = -Math.round(width); i < Math.round(width); i = i + 5 / (2 * lastScale)) {
