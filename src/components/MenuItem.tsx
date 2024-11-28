@@ -8,6 +8,7 @@ import { ScaleInput } from "./Inputs/ScaleInput";
 import { GridInput } from "./Inputs/GridInput";
 import { ParametreFormulaEditor } from "./Inputs/ParametreFormulaEditor";
 import { DerevativeEditor } from "./Inputs/DerevativeInput";
+import { StartCoordInput } from "./Inputs/StartCoordInput";
 interface MenuItemProps {
   functionItem: MenuFunction;
 }
@@ -15,6 +16,21 @@ interface MenuItemProps {
 export const MenuItem: FC<MenuItemProps> = ({ functionItem }) => {
   const { removeMenuFunctions } = useFunctionsStore();
   const removeMenuItem = (funcId: string) => () => removeMenuFunctions(funcId);
+
+  if (functionItem.type === "start_coord") {
+    return (
+      <div className="flex gap-2 items-center">
+        <div
+          onClick={removeMenuItem(functionItem.id)}
+          style={{ backgroundColor: functionItem.color }}
+          className={`flex text-black font-bold justify-center items-center rounded-full w-7 h-7`}
+        >
+          SC
+        </div>
+        <StartCoordInput funcId={functionItem.id} />
+      </div>
+    );
+  }
 
   if (functionItem.type === "derevative") {
     return (

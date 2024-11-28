@@ -3,9 +3,10 @@ import { Button, Divider, Dropdown, Typography } from "antd";
 import { MenuItem } from "./MenuItem";
 import { useResizeObserver } from "../model/lib/hook/useResizeObserver";
 import React from "react";
+import "../index.css";
 
 export const Menu = () => {
-  const { functions, addMenuFuction } = useFunctionsStore();
+  const { functions, addMenuFuction, removeMenuFunctions } = useFunctionsStore();
   const [ref, { width }] = useResizeObserver<HTMLDivElement>();
 
   const addFuncMenu = () =>
@@ -36,13 +37,14 @@ export const Menu = () => {
   const addGridDistance = () => addMenuFuction({ type: "grid", value: 100 });
   const addParametreFunction = () => addMenuFuction({ type: "parametre_function", value: ["", ""] });
   const addDerevative = () => addMenuFuction({ type: "derevative", value: "" });
+  const addStartCoord = () => addMenuFuction({ type: "start_coord", value: [0, 0] });
 
   return (
-    <div ref={ref} className={"p-3 flex flex-col"}>
+    <div ref={ref} className={"p-3 flex flex-col menu"}>
       {width > 170 ? <Typography.Title>Functions</Typography.Title> : <Typography.Title>Func</Typography.Title>}
 
       <Divider />
-      <div className="flex flex-col gap-1">
+      <div className={"flex flex-col gap-1" + (width < 170 ? " justify-center items-center" : "")}>
         {width > 170
           ? functions.map((functionItem) => (
               <React.Fragment key={functionItem.id}>
@@ -56,7 +58,10 @@ export const Menu = () => {
                 style={{
                   backgroundColor: functionItem.color,
                 }}
-                className={`flex text-black font-bold justify-center items-center rounded-full w-7 h-7`}
+                onClick={() => removeMenuFunctions(functionItem.id)}
+                className={`flex text-black font-bold justify-center items-center rounded-full w-7 h-7 ${
+                  width < 170 ? " rounded-md w-full" : ""
+                }`}
               >
                 {functionItem.type[0].toUpperCase()}
               </div>
@@ -100,10 +105,11 @@ export const Menu = () => {
                 onClick: addParametreFunction,
               },
               { key: "8", label: "Derevative", onClick: addDerevative },
+              { key: "9", label: "Start Coordinates Point", onClick: addStartCoord },
             ],
           }}
         >
-          <Button>+</Button>
+          <Button className="w-full">+</Button>
         </Dropdown>
       </div>
     </div>

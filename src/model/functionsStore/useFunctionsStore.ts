@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { getRandomBrightColor } from "../lib/helpers/randomColor";
 import { v4 } from "uuid";
 
-type FunctionType = "function" | "basis" | "point" | "vector" | "scale" | "grid" | "parametre_function" | "derevative";
+type FunctionType = "function" | "basis" | "point" | "vector" | "scale" | "grid" | "parametre_function" | "derevative" | "start_coord";
 type FunctionValue = string | string[] | number[][] | number[] | number;
 export interface MenuFunction {
   id: string;

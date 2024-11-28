@@ -32,6 +32,7 @@ export function FormulaEditor({ funcId }: FormulaEditorProps) {
   return (
     <div className="flex flex-col flex-1">
       <Input
+        addonBefore="y(x) ="
         value={formula}
         onChange={(e) => setFormula(e.target.value)}
         placeholder="x^2 + sin(x) - log(x,10)"

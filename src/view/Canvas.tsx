@@ -30,6 +30,12 @@ export const Canvas = () => {
     lastGridDistance = 100;
   }
 
+  const startCoords = functions.filter(({ type }) => type === "start_coord");
+  let lastStartCoord = startCoords[startCoords.length - 1]?.value as number[];
+  if (!lastStartCoord) {
+    lastStartCoord = [0, 0];
+  }
+
   // Axes
   useEffect(() => {
     if (width && height) {
@@ -140,6 +146,7 @@ export const Canvas = () => {
         drawer.current.width = width;
         drawer.current.scale = lastScale;
         drawer.current.gridDistance = lastGridDistance;
+        drawer.current.startCoords = { x: lastStartCoord[0], y: lastStartCoord[1] };
         drawer.current.clear();
         drawCoords();
         drawElements();
@@ -151,7 +158,7 @@ export const Canvas = () => {
         drawCoords();
       }
     }
-  }, [canvasRef, height, width, functions, lastScale, lastGridDistance]);
+  }, [canvasRef, height, width, functions, lastScale, lastGridDistance, lastStartCoord]);
 
   // Animation
   useEffect(() => {

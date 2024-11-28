@@ -9,6 +9,8 @@ export class Drawer {
   stage: Konva.Stage;
   scale: number = 1;
   gridDistance: number = 1;
+  startCoords: Point = { x: 0, y: 0 };
+  private origin: Point;
   private layer: Konva.Layer;
   private basisX: Point;
   private basisY: Point;
@@ -27,6 +29,7 @@ export class Drawer {
 
     this.basisX = { x: 1, y: 0 };
     this.basisY = { x: 0, y: 1 };
+    this.origin = { x: width / 2 || 600, y: height / 2 || 600 };
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
   }
@@ -48,6 +51,7 @@ export class Drawer {
   }
 
   private transformPoint(point: Point): Point {
+    this.origin = { x: this.stage.width() / 2 + this.startCoords.x, y: this.stage.height() / 2 - this.startCoords.y };
     return {
       x: this.scale * (point.x * this.basisX.x + point.y * this.basisY.x),
       y: this.scale * (point.x * this.basisX.y + point.y * this.basisY.y),
@@ -59,23 +63,19 @@ export class Drawer {
   }
 
   drawAxes(color: string = "black", strokeWidth: number = 2): Konva.Line[] {
-    const width = this.stage.width();
-    const height = this.stage.height();
-    const origin = { x: width / 2, y: height / 2 };
-
     const xAxis = new Konva.Line({
-      points: [this.transformPoint({ x: -width, y: 0 }), this.transformPoint({ x: width, y: 0 })].flatMap((p) => [
-        p.x + origin.x,
-        p.y + origin.y,
+      points: [this.transformPoint({ x: -this.origin.x * 2, y: 0 }), this.transformPoint({ x: this.origin.x * 2, y: 0 })].flatMap((p) => [
+        p.x + this.origin.x,
+        p.y + this.origin.y,
       ]),
       stroke: color,
       strokeWidth,
     });
 
     const yAxis = new Konva.Line({
-      points: [this.transformPoint({ x: 0, y: height }), this.transformPoint({ x: 0, y: -height })].flatMap((p) => [
-        p.x + origin.x,
-        -p.y + origin.y,
+      points: [this.transformPoint({ x: 0, y: this.origin.y * 2 }), this.transformPoint({ x: 0, y: -this.origin.y * 2 })].flatMap((p) => [
+        p.x + this.origin.x,
+        -p.y + this.origin.y,
       ]),
       stroke: color,
       strokeWidth,
@@ -92,7 +92,6 @@ export class Drawer {
   drawGrid(color: string = "lightgray", strokeWidth: number = 1): Konva.Line[] {
     const width = this.stage.width();
     const height = this.stage.height();
-    const origin = { x: width / 2, y: height / 2 };
 
     const lines: Konva.Line[] = [];
 
@@ -103,7 +102,7 @@ export class Drawer {
       ];
       const transformedPoints = this.transformPoints(linePoints);
       const konvaLine = new Konva.Line({
-        points: transformedPoints.flatMap((p) => [p.x + origin.x, -p.y + origin.y]),
+        points: transformedPoints.flatMap((p) => [p.x + this.origin.x, -p.y + this.origin.y]),
         stroke: color,
         strokeWidth,
       });
@@ -118,7 +117,7 @@ export class Drawer {
       ];
       const transformedPoints = this.transformPoints(linePoints);
       const konvaLine = new Konva.Line({
-        points: transformedPoints.flatMap((p) => [p.x + origin.x, -p.y + origin.y]),
+        points: transformedPoints.flatMap((p) => [p.x + this.origin.x, -p.y + this.origin.y]),
         stroke: color,
         strokeWidth,
       });
@@ -133,7 +132,7 @@ export class Drawer {
       ];
       const transformedPoints = this.transformPoints(linePoints);
       const konvaLine = new Konva.Line({
-        points: transformedPoints.flatMap((p) => [p.x + origin.x, -p.y + origin.y]),
+        points: transformedPoints.flatMap((p) => [p.x + this.origin.x, -p.y + this.origin.y]),
         stroke: color,
         strokeWidth,
       });
@@ -148,7 +147,7 @@ export class Drawer {
       ];
       const transformedPoints = this.transformPoints(linePoints);
       const konvaLine = new Konva.Line({
-        points: transformedPoints.flatMap((p) => [p.x + origin.x, -p.y + origin.y]),
+        points: transformedPoints.flatMap((p) => [p.x + this.origin.x, -p.y + this.origin.y]),
         stroke: color,
         strokeWidth,
       });
@@ -163,17 +162,15 @@ export class Drawer {
   }
 
   animateAxes(duration: number): void {
-    const width = this.stage.width();
-    const height = this.stage.height();
-    const origin = { x: width / 2, y: height / 2 };
-    const xTransformedPoints = [this.transformPoint({ x: -width / 2, y: 0 }), this.transformPoint({ x: width / 2, y: 0 })].flatMap((p) => [
-      p.x + origin.x,
-      p.y + origin.y,
-    ]);
+    const xTransformedPoints = [
+      this.transformPoint({ x: -this.origin.x * 2, y: 0 }),
+      this.transformPoint({ x: this.origin.x * 2, y: 0 }),
+    ].flatMap((p) => [p.x + this.origin.x, p.y + this.origin.y]);
 
-    const yTransformedPoints = [this.transformPoint({ x: 0, y: height / 2 }), this.transformPoint({ x: 0, y: -height / 2 })].flatMap(
-      (p) => [p.x + origin.x, -p.y + origin.y]
-    );
+    const yTransformedPoints = [
+      this.transformPoint({ x: 0, y: this.origin.y * 2 }),
+      this.transformPoint({ x: 0, y: -this.origin.y * 2 }),
+    ].flatMap((p) => [p.x + this.origin.x, -p.y + this.origin.y]);
 
     this.lastAxes[0]?.to({
       points: xTransformedPoints,
@@ -191,7 +188,6 @@ export class Drawer {
   animateGrid(duration: number): void {
     const width = this.stage.width();
     const height = this.stage.height();
-    const origin = { x: width / 2, y: height / 2 };
     const lines: number[][] = [];
 
     for (let x = 0; x <= width; x += this.gridDistance) {
@@ -199,7 +195,7 @@ export class Drawer {
         { x, y: -height },
         { x, y: height },
       ];
-      const transformedPoints = this.transformPoints(linePoints).flatMap((p) => [p.x + origin.x, -p.y + origin.y]);
+      const transformedPoints = this.transformPoints(linePoints).flatMap((p) => [p.x + this.origin.x, -p.y + this.origin.y]);
       lines.push(transformedPoints);
     }
 
@@ -208,7 +204,7 @@ export class Drawer {
         { x, y: -height },
         { x, y: height },
       ];
-      const transformedPoints = this.transformPoints(linePoints).flatMap((p) => [p.x + origin.x, -p.y + origin.y]);
+      const transformedPoints = this.transformPoints(linePoints).flatMap((p) => [p.x + this.origin.x, -p.y + this.origin.y]);
       lines.push(transformedPoints);
     }
 
@@ -217,7 +213,7 @@ export class Drawer {
         { x: -width, y },
         { x: width, y },
       ];
-      const transformedPoints = this.transformPoints(linePoints).flatMap((p) => [p.x + origin.x, -p.y + origin.y]);
+      const transformedPoints = this.transformPoints(linePoints).flatMap((p) => [p.x + this.origin.x, -p.y + this.origin.y]);
       lines.push(transformedPoints);
     }
 
@@ -226,7 +222,7 @@ export class Drawer {
         { x: -width, y },
         { x: width, y },
       ];
-      const transformedPoints = this.transformPoints(linePoints).flatMap((p) => [p.x + origin.x, -p.y + origin.y]);
+      const transformedPoints = this.transformPoints(linePoints).flatMap((p) => [p.x + this.origin.x, -p.y + this.origin.y]);
       lines.push(transformedPoints);
     }
 
@@ -243,8 +239,8 @@ export class Drawer {
     const transformedPoint = this.transformPoint(point);
 
     const circle = new Konva.Circle({
-      x: transformedPoint.x + this.stage.width() / 2,
-      y: this.stage.height() / 2 - transformedPoint.y,
+      x: transformedPoint.x + this.origin.x,
+      y: this.origin.y - transformedPoint.y,
       radius,
       fill: color,
     });
@@ -269,10 +265,10 @@ export class Drawer {
 
     const arrow = new Konva.Arrow({
       points: [
-        transformedStart.x + this.stage.width() / 2,
-        this.stage.height() / 2 - transformedStart.y,
-        transformedEnd.x + this.stage.width() / 2,
-        this.stage.height() / 2 - transformedEnd.y,
+        transformedStart.x + this.origin.x,
+        this.origin.y - transformedStart.y,
+        transformedEnd.x + this.origin.x,
+        this.origin.y - transformedEnd.y,
       ],
       pointerLength: headSize,
       pointerWidth: headSize / 2,
@@ -295,10 +291,10 @@ export class Drawer {
 
     const line = new Konva.Line({
       points: [
-        transformedStart.x + this.stage.width() / 2,
-        this.stage.height() / 2 - transformedStart.y,
-        transformedEnd.x + this.stage.width() / 2,
-        this.stage.height() / 2 - transformedEnd.y,
+        transformedStart.x + this.origin.x,
+        this.origin.y - transformedStart.y,
+        transformedEnd.x + this.origin.x,
+        this.origin.y - transformedEnd.y,
       ],
       stroke: color,
       strokeWidth: strokeWidth,
@@ -323,8 +319,8 @@ export class Drawer {
       const transformedPoint = this.transformPoint(data);
 
       point.to({
-        x: transformedPoint.x + this.stage.width() / 2,
-        y: this.stage.height() / 2 - transformedPoint.y,
+        x: transformedPoint.x + this.origin.x,
+        y: this.origin.y - transformedPoint.y,
         duration,
         onFinish: () => this.layer.draw(),
         easing: Konva.Easings.Linear,
@@ -339,10 +335,10 @@ export class Drawer {
 
       line.to({
         points: [
-          transformedStart.x + this.stage.width() / 2,
-          this.stage.height() / 2 - transformedStart.y,
-          transformedEnd.x + this.stage.width() / 2,
-          this.stage.height() / 2 - transformedEnd.y,
+          transformedStart.x + this.origin.x,
+          this.origin.y - transformedStart.y,
+          transformedEnd.x + this.origin.x,
+          this.origin.y - transformedEnd.y,
         ],
         duration,
         onFinish: () => this.layer.draw(),
@@ -357,10 +353,10 @@ export class Drawer {
 
       vector.to({
         points: [
-          transformedStart.x + this.stage.width() / 2,
-          this.stage.height() / 2 - transformedStart.y,
-          transformedEnd.x + this.stage.width() / 2,
-          this.stage.height() / 2 - transformedEnd.y,
+          transformedStart.x + this.origin.x,
+          this.origin.y - transformedStart.y,
+          transformedEnd.x + this.origin.x,
+          this.origin.y - transformedEnd.y,
         ],
         duration,
         onFinish: () => this.layer.draw(),

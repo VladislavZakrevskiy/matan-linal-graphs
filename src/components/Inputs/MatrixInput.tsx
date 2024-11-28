@@ -38,7 +38,7 @@ export const MatrixInput = ({ funcId }: { funcId: string }) => {
   }, [x1, x2, y1, y2, funcId, setValueFunction]);
 
   return (
-    <div className="grid gap-1 grid-cols-2 grid-rows-2 flex-1">
+    <div className="grid gap-1 grid-cols-2 grid-rows-3 flex-1">
       <InputNumber onChange={(number) => onCoordsChange(Number(number), "x1")} value={x1} placeholder="x1" />
       <InputNumber onChange={(number) => onCoordsChange(Number(number), "x2")} value={x2} placeholder="x2" />
       <InputNumber onChange={(number) => onCoordsChange(Number(number), "y1")} value={y1} placeholder="y1" />

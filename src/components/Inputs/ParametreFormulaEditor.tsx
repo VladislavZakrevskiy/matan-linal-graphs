@@ -11,8 +11,8 @@ export function ParametreFormulaEditor({ funcId }: FormulaEditorProps) {
   const { functions, setValueFunction } = useFunctionsStore();
   const functionItem = functions.find(({ id }) => id === funcId);
   const value = functionItem?.value as string[];
-  const [xFormula, setYFormula] = useState("");
-  const [yFormula, setXFormula] = useState("");
+  const [xFormula, setXFormula] = useState("");
+  const [yFormula, setYFormula] = useState("");
 
   const setValue = () => {
     setValueFunction(funcId, [xFormula, yFormula]);
@@ -27,13 +27,14 @@ export function ParametreFormulaEditor({ funcId }: FormulaEditorProps) {
   }, [xFormula, yFormula]);
 
   useEffect(() => {
-    setYFormula(value[1]);
     setXFormula(value[0]);
+    setYFormula(value[1]);
   }, []);
 
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 gap-1">
       <Input
+        addonBefore="x(t) ="
         value={xFormula}
         onChange={(e) => setYFormula(e.target.value)}
         autoComplete="off"
@@ -43,6 +44,7 @@ export function ParametreFormulaEditor({ funcId }: FormulaEditorProps) {
         placeholder="t^2 + 2"
       />
       <Input
+        addonBefore="y(t) ="
         value={yFormula}
         onChange={(e) => setXFormula(e.target.value)}
         autoComplete="off"
